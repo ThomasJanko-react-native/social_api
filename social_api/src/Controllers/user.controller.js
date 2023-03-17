@@ -34,13 +34,9 @@ exports.Login =(req, res) => {
                     user.password, function(err, result) {
                         if(!!result){
                             console.log('Login Successful')
-                            var token = jwt.sign({id: user.id }, 'eahgzkegakjz' );//process.env.JWT_SECRET
+                            var token = jwt.sign({id: user.id },process.env.JWT_SECRET );//process.env.JWT_SECRET
                             res.status(200).send(token);
-                            // res.send({
-                            //         status: res.statusCode,
-                            //         auth: true,
-                            //         user: user
-                            //     })
+                            
                         }
                         else{
                             console.log('Password Incorrect')
@@ -80,7 +76,7 @@ exports.Register =(req, res) => {
             });
             newUser.save()
             .then((user)=>{
-                var token = jwt.sign({id: user.id, isAdmin: user.isAdmin }, process.env.JWT_SECRET);//Math.floor(Date.now() / 1000) + (60 * 60)
+                var token = jwt.sign({id: user.id }, process.env.JWT_SECRET);//Math.floor(Date.now() / 1000) + (60 * 60)
                 res.send(token);
                 // res.send({user, token});
             })
@@ -88,25 +84,6 @@ exports.Register =(req, res) => {
                 res.status(404).send(err)
             });
         });
-}
-
-
-
-//update User
-exports.EditUser =(req, res) =>{
-    User.findByIdAndUpdate(req.params.id, {
-        firstName: req.body.firstName,
-        lastName: req.body.lastName,
-        isAdmin: req.body.isAdmin,
-        password: req.body.password,
-        avatar: req.body.avatar
-    }, {new: true}) //retourne User avec changements
-    .then((user)=>{
-        res.send(user);
-    })
-    .catch((err)=>{
-        res.status(404).send(err)
-    })
 }
 
 
@@ -144,7 +121,8 @@ exports.GetOneUser = (req, res)=>{
 exports.GetAuthUser = (req, res)=>{
     // User.findById(req.params.id)
     // console.log(req.userId)
-    User.findById(req.userId).populate('places').populate({path: 'reservations', populate: {path: 'owner'}})
+    User.findById(req.userId).populate('posts')
+    // .populate('posts').populate({path: 'posts', populate: {path: 'author'}})
     .then((users)=>{
         res.send(users)
     })

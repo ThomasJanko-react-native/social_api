@@ -14,6 +14,10 @@ const postSchema = new mongoose.Schema({
     ref: 'User',
     required: true
   },
+  image: {
+    type: String,
+    required: true
+  },
   createdAt: {
     type: Date,
     default: Date.now
@@ -21,7 +25,14 @@ const postSchema = new mongoose.Schema({
   updatedAt: {
     type: Date,
     default: Date.now
-  }
+  },
+  comments:[
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Comment'
+    },
+    
+  ]
 });
 
 const Post = mongoose.model('Post', postSchema);

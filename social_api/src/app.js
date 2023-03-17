@@ -36,9 +36,6 @@ mongoose.connect(uri)
 app.use('/api', apiRouter);
 
 
-// app.listen(process.env.PORT, function () {
-//     console.log(`server start on port ${process.env.PORT}`);
-// });
-app.listen(5056, function () {
-    console.log(`server start on port 5056`);
+app.listen(process.env.PORT, function () {
+    console.log(`server start on port ${process.env.PORT}`);
 });

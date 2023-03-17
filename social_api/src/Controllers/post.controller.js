@@ -4,12 +4,13 @@ const Post = require('../Models/post.model')
 
 //création utilisateur
 exports.AddPost = async (req, res) => {
-
+console.log('posttt')
     try {
         const newPost = new Post({
             title: req.body.title,
             content: req.body.content,
-            author: req.userId
+            author: req.userId,
+            image: req.body.image,
         });
         const savedPost = await newPost.save();
         const updatedUser = await User.findOneAndUpdate({_id: req.userId}, {$push: {posts: savedPost._id}}, {new: true}).exec();
@@ -21,6 +22,7 @@ exports.AddPost = async (req, res) => {
 }
 
 exports.GetPosts =(req, res)=>{
+    console.log('API GET POSTS')
     Post.find().populate('author')
     .then((posts)=>{
          res.send(posts)

@@ -37,7 +37,8 @@ const userSchema = mongoose.Schema({
     avatar: {
         type: String,
         required: false,
-        default: 'https://cdn-icons-png.flaticon.com/512/147/147144.png'
+        // default: 'https://cdn-icons-png.flaticon.com/512/147/147144.png'
+        default: 'https://i.pravatar.cc/150?img=' + Math.floor(Math.random() * 70)
 
     },
     posts:[
