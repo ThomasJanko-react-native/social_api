@@ -133,11 +133,9 @@ exports.GetAuthUser = (req, res)=>{
 
 //findAllUsers
 exports.GetUsers =(req, res)=>{
-    User.find().populate('places')
+    User.find()
     .then((users)=>{
          res.send(users)
-        // res.status(200).json(users)
-
     })
     .catch((err)=>{
         res.status(500).send(err)

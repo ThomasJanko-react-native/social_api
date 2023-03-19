@@ -1,29 +1,41 @@
 const User = require('../Models/user.model')
-const Post = require('../Models/post.model')
+const Post = require('../Models/post.model');
+const Comment = require('../Models/comment.model');
 
 
 //création utilisateur
 exports.AddPost = async (req, res) => {
-console.log('posttt')
     try {
-        const newPost = new Post({
-            title: req.body.title,
-            content: req.body.content,
-            author: req.userId,
-            image: req.body.image,
-        });
-        const savedPost = await newPost.save();
-        const updatedUser = await User.findOneAndUpdate({_id: req.userId}, {$push: {posts: savedPost._id}}, {new: true}).exec();
-        console.log(updatedUser);
-        res.status(201).send(savedPost);
-    } catch (error) {
-        res.status(500).send({ message: error.message });
+      // Create a new comment using the Comment model
+      const newComment = new Comment({
+        author: req.userId,
+        content: req.body.content
+      });
+  
+      // Create a new post using the Post model
+      const newPost = new Post({
+        title: req.body.title,
+        content: req.body.content,
+        author: req.userId,
+        image: req.body.image,
+        comments: [newComment]
+      });
+  
+      // Save the new post and comment to the database
+      await newPost.save();
+      await newComment.save();
+  
+      // Return the new post and comment to the client
+      res.status(201).json({ post: newPost, comment: newComment });
+    } catch (err) {
+      console.error(err);
+      res.status(500).send('Server error');
     }
-}
+  };
 
 exports.GetPosts =(req, res)=>{
     console.log('API GET POSTS')
-    Post.find().populate('author')
+    Post.find().populate('author').populate({path: 'comments', populate: {path: 'author'}})
     .then((posts)=>{
          res.send(posts)
     })
@@ -70,3 +82,25 @@ exports.DeletePost =(req, res)=>{
     }
    
 }
+
+//ajouter un commentaire
+exports.AddComment = async (req, res) => {
+    try {
+        const postId = req.params.id;
+
+        const comment = new Comment({
+            author: req.userId, 
+            content: req.body.content,
+        });
+        await comment.save();
+        const updatedPost = await Post.findByIdAndUpdate(
+            postId,
+            { $push: { comments: comment } },
+            { new: true }
+        );
+
+        res.status(200).send(updatedPost);
+    } catch (error) {
+        res.status(500).send({ message: error.message });
+    }
+};
